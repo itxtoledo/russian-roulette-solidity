@@ -11,7 +11,9 @@ describe("RussianRoulette", function () {
     const RussianRouletteFactory = await ethers.getContractFactory(
       "RussianRoulette"
     );
-    const RussianRoulette = await RussianRouletteFactory.connect(accounts[10]).deploy();
+    const RussianRoulette = await RussianRouletteFactory.connect(
+      accounts[10]
+    ).deploy();
 
     return { RussianRoulette, accounts };
   }
@@ -23,11 +25,11 @@ describe("RussianRoulette", function () {
       );
 
       const balanceBefore: {
-        [address: string]: string;
+        [key: string]: string;
       } = {};
 
       const balanceAfter: {
-        [address: string]: string;
+        [key: string]: string;
       } = {};
 
       for (let player = 1; player <= 6; player++) {
@@ -38,21 +40,24 @@ describe("RussianRoulette", function () {
           "ether"
         );
 
-        if (player != 6) {
+        if (player == 6) {
           await expect(
-            RussianRoulette.connect(acc).enter({
-              value: ZERO_DOT_ONE_ETHER,
-            })
-          ).to.emit(RussianRoulette, "PlayerJoined");
-        } else {
-          await expect(
-            RussianRoulette.connect(acc).enter({
-              value: ZERO_DOT_ONE_ETHER,
-            })
+            RussianRoulette.connect(acc).enter({ value: ZERO_DOT_ONE_ETHER })
           )
             .to.emit(RussianRoulette, "PlayerJoined")
             .to.emit(RussianRoulette, "Victim");
+        } else {
+          await expect(
+            RussianRoulette.connect(acc).enter({ value: ZERO_DOT_ONE_ETHER })
+          ).to.emit(RussianRoulette, "PlayerJoined");
         }
+      }
+
+      console.log("balanceBefore");
+      console.table(balanceBefore);
+
+      for (let player = 1; player <= 6; player++) {
+        const acc = accounts[player - 1];
 
         balanceAfter[acc.address] = ethers.utils.formatUnits(
           await acc.getBalance(),
@@ -60,10 +65,7 @@ describe("RussianRoulette", function () {
         );
       }
 
-      console.log("Balance Before");
-      console.table(balanceBefore);
-
-      console.log("Balance After");
+      console.log("balanceAfter");
       console.table(balanceAfter);
     });
   });
