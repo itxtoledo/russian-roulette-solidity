@@ -41,13 +41,10 @@ contract RussianRoulette {
         uint256 balanceToDistribute = SafeMath.div(address(this).balance, 5);
 
         address victim = players[victimSeat_];
-        address[] memory winners = new address[](5);
-        uint256 j = 0;
+
         for (uint i = 0; i < 6; i++) {
             if (i != victimSeat_) {
                 payable(players[i]).transfer(balanceToDistribute);
-                winners[j] = players[i];
-                j++;
             }
         }
 
